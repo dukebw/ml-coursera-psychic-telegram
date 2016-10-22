@@ -118,5 +118,3 @@ for i = 1:size(lambda_array)(1)
 
         pause;
 endfor
-
-
