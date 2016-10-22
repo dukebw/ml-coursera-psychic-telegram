@@ -19,17 +19,13 @@ p = zeros(size(X, 1), 1);
 %       function can also return the index of the max element, for more
 %       information see 'help max'. If your examples are in rows, then, you
 %       can use max(A, [], 2) to obtain the max for each row.
-%
-
-
-
-
-
-
-
-
-
 % =========================================================================
 
+a2 = apply_layer(X, Theta1);
+
+a3 = apply_layer(a2, Theta2);
+
+[_, p] = max(a3');
+p = p';
 
 end
