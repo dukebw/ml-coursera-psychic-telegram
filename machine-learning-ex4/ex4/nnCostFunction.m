@@ -16,10 +16,11 @@ function [J grad] = nnCostFunction(nn_params, ...
 
 % Reshape nn_params back into the parameters Theta1 and Theta2, the weight matrices
 % for our 2 layer neural network
-Theta1 = reshape(nn_params(1:hidden_layer_size * (input_layer_size + 1)), ...
+theta1_last = hidden_layer_size * (input_layer_size + 1);
+Theta1 = reshape(nn_params(1:theta1_last), ...
                  hidden_layer_size, (input_layer_size + 1));
 
-Theta2 = reshape(nn_params((1 + (hidden_layer_size * (input_layer_size + 1))):end), ...
+Theta2 = reshape(nn_params(((1 + theta1_last):end)), ...
                  num_labels, (hidden_layer_size + 1));
 
 % Setup some useful variables
@@ -61,31 +62,42 @@ Theta2_grad = zeros(size(Theta2));
 %               the regularization separately and then add them to Theta1_grad
 %               and Theta2_grad from Part 2.
 %
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-% -------------------------------------------------------------
-
 % =========================================================================
+
+a1 = [ones(m, 1) X];
+[a2, z2] = apply_layer(a1, Theta1);
+[a3, z3] = apply_layer(a2, Theta2);
+h_theta_x = a3(:, 2:end);
+
+y_recoded = zeros(m, num_labels);
+
+for y_index = 1:m
+        y_recoded(y_index, y(y_index)) = 1;
+endfor
+
+J = 0
+for label = 1:num_labels
+        y_k = y_recoded(:, label);
+        h_theta_x_k = h_theta_x(:, label);
+        J = (J + (1/m*(-y_k'*log(h_theta_x_k) - (1 - y_k)'*log(1 - h_theta_x_k))));
+endfor
+
+Theta1_reg = Theta1(:, 2:end);
+Theta2_reg = Theta2(:, 2:end);
+J = (J + (lambda/(2*m))*(sum((Theta1_reg .* Theta1_reg)(:)) +
+                         sum((Theta2_reg .* Theta2_reg)(:))));
+
+delta_3 = (h_theta_x - y_recoded);
+delta_2 = (delta_3 * Theta2)(:, 2:end) .* sigmoidGradient(z2);
+
+Theta1_grad = 1/m*(delta_2' * a1);
+Theta2_grad = 1/m*(delta_3' * a2);
+
+% Regularization
+Theta1_grad(:, 2:end) = Theta1_grad(:, 2:end) + (lambda/m)*Theta1(:, 2:end);
+Theta2_grad(:, 2:end) = Theta2_grad(:, 2:end) + (lambda/m)*Theta2(:, 2:end);
 
 % Unroll gradients
 grad = [Theta1_grad(:) ; Theta2_grad(:)];
-
 
 end
