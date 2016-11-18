@@ -49,18 +49,14 @@ error_val   = zeros(m, 1);
 %           ....
 %           
 %       end
-%
-
-% ---------------------- Sample Solution ----------------------
-
-
-
-
-
-
-
-% -------------------------------------------------------------
-
 % =========================================================================
+
+for num_data = 1:m
+        X_subset = X(1:num_data, :);
+        y_subset = y(1:num_data, :);
+        [theta] = trainLinearReg(X_subset, y_subset, lambda)
+        [error_train(num_data), _] = linearRegCostFunction(X_subset, y_subset, theta, 0)
+        [error_val(num_data), _] = linearRegCostFunction(Xval, yval, theta, 0)
+endfor
 
 end
